@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit</title>
+    <style>
+        body{
+            font-family:Arial;
+            background:#0f172a;
+            color:white;
+            padding:50px;
+        }
+
+        .box{
+            max-width:600px;
+            margin:auto;
+            background:#1e293b;
+            padding:30px;
+            border-radius:12px;
+        }
+
+        input, textarea, select{
+            width:100%;
+            padding:10px;
+            margin-bottom:15px;
+        }
+
+        button{
+            background:#22c55e;
+            color:white;
+            border:none;
+            padding:10px 20px;
+            border-radius:8px;
+            cursor:pointer;
+        }
+
+        a{
+            color:white;
+            text-decoration:none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>✏️ Edit</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit">
+            Save Changes
+        </button>
+    </form>
+
+    <br>
+
+    <a href="{% url 'home' %}">
+        ← Back Home
+    </a>
+</div>
+
+</body>
+</html>

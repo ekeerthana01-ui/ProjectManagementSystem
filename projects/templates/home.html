@@ -1,0 +1,283 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PMS PRO</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        body{
+            margin:0;
+            font-family:'Inter',sans-serif;
+            background:#0b0b14;
+            color:white;
+        }
+
+        /* SIDEBAR STYLE TOPBAR */
+        .topbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:18px 40px;
+            background:#111125;
+            border-bottom:1px solid #2a2a44;
+        }
+
+        .logo{
+            font-size:20px;
+            font-weight:800;
+            color:#a855f7;
+        }
+
+        .logout{
+            color:#ff4d4d;
+            text-decoration:none;
+            font-weight:bold;
+        }
+
+        /* STATS CARDS */
+        .dashboard{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:20px;
+            padding:25px 40px;
+        }
+
+        .stats{
+            background:linear-gradient(135deg,#7c3aed,#ec4899);
+            padding:25px;
+            border-radius:18px;
+            text-align:center;
+            box-shadow:0 10px 30px rgba(0,0,0,0.4);
+            transition:0.3s;
+        }
+
+        .stats:hover{
+            transform:translateY(-6px);
+        }
+
+        .stats h3{
+            margin:0;
+            font-size:16px;
+        }
+
+        .stats h1{
+            margin-top:10px;
+            font-size:28px;
+        }
+
+        /* FORM SECTION */
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:20px;
+            padding:20px 40px;
+        }
+
+        .card{
+            background:#14142a;
+            border:1px solid #2a2a44;
+            padding:20px;
+            border-radius:16px;
+        }
+
+        .card h3{
+            color:#a855f7;
+            margin-bottom:15px;
+        }
+
+        input,select,textarea{
+            width:100%;
+            padding:10px;
+            margin-bottom:10px;
+            border:none;
+            border-radius:10px;
+            background:#1e1e35;
+            color:white;
+            outline:none;
+        }
+
+        button{
+            width:100%;
+            padding:10px;
+            background:#a855f7;
+            border:none;
+            border-radius:10px;
+            color:white;
+            font-weight:bold;
+            cursor:pointer;
+        }
+
+        button:hover{
+            background:#9333ea;
+        }
+
+        /* LIST SECTION */
+        .section{
+            padding:20px 40px;
+        }
+
+        .section h2{
+            color:#a855f7;
+            margin-bottom:15px;
+        }
+
+        .item{
+            background:#14142a;
+            border:1px solid #2a2a44;
+            padding:18px;
+            border-radius:14px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:10px;
+        }
+
+        .tag{
+            padding:5px 10px;
+            border-radius:8px;
+            font-size:12px;
+            background:#7c3aed;
+        }
+
+        .actions a{
+            text-decoration:none;
+            margin-left:10px;
+            font-weight:bold;
+        }
+
+        .edit{ color:#22c55e; }
+        .delete{ color:#ef4444; }
+
+    </style>
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+    <div class="logo">🚀 PMS PRO</div>
+    <div>
+        <a class="logout" href="{% url 'logout' %}">Logout</a>
+    </div>
+</div>
+
+<!-- STATS -->
+<div class="dashboard">
+
+    <div class="stats">
+        <h3>🏢 Companies</h3>
+        <h1>{{ companies|length }}</h1>
+    </div>
+
+    <div class="stats">
+        <h3>📁 Projects</h3>
+        <h1>{{ projects|length }}</h1>
+    </div>
+
+    <div class="stats">
+        <h3>📝 Tasks</h3>
+        <h1>{{ tasks|length }}</h1>
+    </div>
+
+</div>
+
+<!-- FORMS -->
+<div class="grid">
+
+    <div class="card">
+        <h3>🏢 Create Company</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ company_form.as_p }}
+            <button name="add_company">Create</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>📁 Create Project</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ project_form.as_p }}
+            <button name="add_project">Create</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>📝 Create Task</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ task_form.as_p }}
+            <button name="add_task">Create</button>
+        </form>
+    </div>
+
+</div>
+
+<!-- COMPANIES -->
+<div class="section">
+    <h2>🏢 Companies</h2>
+
+    {% for c in companies %}
+    <div class="item">
+        <div>
+            <b>{{ c.name }}</b><br>
+            <small>Created By: {{ c.created_by }}</small>
+        </div>
+
+        <div class="actions">
+            <a class="edit" href="{% url 'edit_company' c.id %}">Edit</a>
+            <a class="delete" href="{% url 'delete_company' c.id %}">Delete</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- PROJECTS -->
+<div class="section">
+    <h2>📁 Projects</h2>
+
+    {% for p in projects %}
+    <div class="item">
+        <div>
+            <b>{{ p.name }}</b><br>
+            <small>{{ p.description }}</small><br>
+            <small>🏢 {{ p.company.name }}</small>
+        </div>
+
+        <div class="actions">
+            <a class="edit" href="{% url 'edit_project' p.id %}">Edit</a>
+            <a class="delete" href="{% url 'delete_project' p.id %}">Delete</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- TASKS -->
+<div class="section">
+    <h2>📝 Tasks</h2>
+
+    {% for t in tasks %}
+    <div class="item">
+        <div>
+            <b>{{ t.title }}</b><br>
+            <small>Project: {{ t.project.name }}</small><br>
+            <small>Assigned: {{ t.assigned_to }}</small>
+        </div>
+
+        <div>
+            <span class="tag">{{ t.get_status_display }}</span>
+
+            <div class="actions" style="margin-top:10px;">
+                <a class="edit" href="{% url 'edit_task' t.id %}">Edit</a>
+                <a class="delete" href="{% url 'delete_task' t.id %}">Delete</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>
