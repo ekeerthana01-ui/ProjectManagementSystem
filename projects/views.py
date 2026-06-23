@@ -1,8 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+
 from .models import Company, Project, Task
 from .forms import CompanyForm, ProjectForm, TaskForm
 
 
+@login_required
 def home(request):
 
     # 🏢 ADD COMPANY
@@ -43,11 +46,11 @@ def home(request):
 
 
 # ✏️ EDIT COMPANY
+@login_required
 def edit_company(request, pk):
-    company = Company.objects.get(id=pk)
+    company = get_object_or_404(Company, id=pk)
 
     form = CompanyForm(request.POST or None, instance=company)
-
     if form.is_valid():
         form.save()
         return redirect("home")
@@ -56,18 +59,19 @@ def edit_company(request, pk):
 
 
 # ❌ DELETE COMPANY
+@login_required
 def delete_company(request, pk):
-    company = Company.objects.get(id=pk)
+    company = get_object_or_404(Company, id=pk)
     company.delete()
     return redirect("home")
 
 
 # ✏️ EDIT PROJECT
+@login_required
 def edit_project(request, pk):
-    project = Project.objects.get(id=pk)
+    project = get_object_or_404(Project, id=pk)
 
     form = ProjectForm(request.POST or None, instance=project)
-
     if form.is_valid():
         form.save()
         return redirect("home")
@@ -76,18 +80,19 @@ def edit_project(request, pk):
 
 
 # ❌ DELETE PROJECT
+@login_required
 def delete_project(request, pk):
-    project = Project.objects.get(id=pk)
+    project = get_object_or_404(Project, id=pk)
     project.delete()
     return redirect("home")
 
 
 # ✏️ EDIT TASK
+@login_required
 def edit_task(request, pk):
-    task = Task.objects.get(id=pk)
+    task = get_object_or_404(Task, id=pk)
 
     form = TaskForm(request.POST or None, instance=task)
-
     if form.is_valid():
         form.save()
         return redirect("home")
@@ -96,24 +101,8 @@ def edit_task(request, pk):
 
 
 # ❌ DELETE TASK
+@login_required
 def delete_task(request, pk):
-    task = Task.objects.get(id=pk)
+    task = get_object_or_404(Task, id=pk)
     task.delete()
-    return redirect("home")
-# ✏️ EDIT COMPANY
-def edit_company(request, pk):
-    company = Company.objects.get(id=pk)
-    form = CompanyForm(request.POST or None, instance=company)
-
-    if form.is_valid():
-        form.save()
-        return redirect("home")
-
-    return render(request, "edit.html", {"form": form})
-
-
-# ❌ DELETE COMPANY
-def delete_company(request, pk):
-    company = Company.objects.get(id=pk)
-    company.delete()
     return redirect("home")
