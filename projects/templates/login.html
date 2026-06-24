@@ -7,11 +7,20 @@
 
 <h2>Login Page</h2>
 
+<!-- LOGIN FORM -->
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Login</button>
 </form>
+
+<br>
+
+<!-- SIGNUP LINK -->
+<p>
+    Don't have an account?
+    <a href="/signup/">Create new account</a>
+</p>
 
 </body>
 </html>
