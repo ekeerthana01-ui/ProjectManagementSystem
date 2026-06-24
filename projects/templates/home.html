@@ -160,7 +160,13 @@
 <div class="topbar">
     <div class="logo">🚀 PMS PRO</div>
     <div>
-        <a class="logout" href="{% url 'logout' %}">Logout</a>
+     <form action="{% url 'logout' %}" method="post" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="logout"
+        style="background:none;border:none;color:#ff4d4d;font-weight:bold;cursor:pointer;">
+        Logout
+    </button>
+</form>   
     </div>
 </div>
 
