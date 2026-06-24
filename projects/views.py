@@ -2,6 +2,7 @@ from django.shortcuts import redirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from django.contrib.auth.models import User
 
 from .models import Company, Project, Task
 from .forms import CompanyForm, ProjectForm, TaskForm
@@ -9,6 +10,10 @@ from .forms import CompanyForm, ProjectForm, TaskForm
 
 # 🏠 HOME PAGE
 def home(request):
+
+    if User.objects.count() == 0:
+        return redirect('signup')
+
     if not request.user.is_authenticated:
         return redirect('login')
     # 🏢 ADD COMPANY
@@ -122,6 +127,10 @@ def delete_task(request, pk):
 
 # 🔐 SIGNUP VIEW
 def signup(request):
+
+    if User.objects.count() > 0:
+        return redirect('login')
+
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
