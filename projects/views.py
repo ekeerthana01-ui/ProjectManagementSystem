@@ -1,3 +1,4 @@
+from django.shortcuts import redirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
@@ -8,7 +9,8 @@ from .forms import CompanyForm, ProjectForm, TaskForm
 
 # 🏠 HOME PAGE
 def home(request):
-
+    if not request.user.is_authenticated:
+        return redirect('login')
     # 🏢 ADD COMPANY
     if request.method == "POST" and "add_company" in request.POST:
         form = CompanyForm(request.POST)
