@@ -11,9 +11,7 @@ from .forms import CompanyForm, ProjectForm, TaskForm
 # 🏠 HOME PAGE
 def home(request):
 
-    if User.objects.count() == 0:
-        return redirect('signup')
-
+    
     if not request.user.is_authenticated:
         return redirect('login')
     # 🏢 ADD COMPANY
@@ -128,9 +126,7 @@ def delete_task(request, pk):
 # 🔐 SIGNUP VIEW
 def signup(request):
 
-    if User.objects.count() > 0:
-        return redirect('login')
-
+   
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
