@@ -1,30 +1,22 @@
-from django.shortcuts import redirect
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
-from django.contrib.auth.models import User
 
 from .models import Company, Project, Task
 from .forms import CompanyForm, ProjectForm, TaskForm
 
 
-# 🏠 HOME PAGE
+# 🏠 HOME PAGE (LOGIN REQUIRED)
+@login_required(login_url='/login/')
 def home(request):
 
-    
-    if not request.user.is_authenticated:
-        return redirect('login')
     # 🏢 ADD COMPANY
     if request.method == "POST" and "add_company" in request.POST:
         form = CompanyForm(request.POST)
         if form.is_valid():
             obj = form.save(commit=False)
-
-            if request.user.is_authenticated:
-                obj.created_by = request.user
-            else:
-                obj.created_by = None
-
+            obj.created_by = request.user
             obj.save()
             return redirect("home")
 
@@ -33,12 +25,7 @@ def home(request):
         form = ProjectForm(request.POST)
         if form.is_valid():
             obj = form.save(commit=False)
-
-            if request.user.is_authenticated:
-                obj.created_by = request.user
-            else:
-                obj.created_by = None
-
+            obj.created_by = request.user
             obj.save()
             return redirect("home")
 
@@ -47,10 +34,7 @@ def home(request):
         form = TaskForm(request.POST)
         if form.is_valid():
             obj = form.save(commit=False)
-
-            if request.user.is_authenticated:
-                obj.assigned_to = request.user
-
+            obj.assigned_to = request.user
             obj.save()
             return redirect("home")
 
@@ -58,9 +42,10 @@ def home(request):
         "company_form": CompanyForm(),
         "project_form": ProjectForm(),
         "task_form": TaskForm(),
-        "companies": Company.objects.all(),
-        "projects": Project.objects.all(),
-        "tasks": Task.objects.all(),
+
+        "companies": Company.objects.filter(created_by=request.user),
+        "projects": Project.objects.filter(created_by=request.user),
+        "tasks": Task.objects.filter(assigned_to=request.user),
     }
 
     return render(request, "home.html", context)
@@ -68,7 +53,7 @@ def home(request):
 
 # ✏️ EDIT COMPANY
 def edit_company(request, pk):
-    company = get_object_or_404(Company, id=pk)
+    company = get_object_or_404(Company, id=pk, created_by=request.user)
     form = CompanyForm(request.POST or None, instance=company)
 
     if form.is_valid():
@@ -80,14 +65,14 @@ def edit_company(request, pk):
 
 # ❌ DELETE COMPANY
 def delete_company(request, pk):
-    company = get_object_or_404(Company, id=pk)
+    company = get_object_or_404(Company, id=pk, created_by=request.user)
     company.delete()
     return redirect("home")
 
 
 # ✏️ EDIT PROJECT
 def edit_project(request, pk):
-    project = get_object_or_404(Project, id=pk)
+    project = get_object_or_404(Project, id=pk, created_by=request.user)
     form = ProjectForm(request.POST or None, instance=project)
 
     if form.is_valid():
@@ -99,14 +84,14 @@ def edit_project(request, pk):
 
 # ❌ DELETE PROJECT
 def delete_project(request, pk):
-    project = get_object_or_404(Project, id=pk)
+    project = get_object_or_404(Project, id=pk, created_by=request.user)
     project.delete()
     return redirect("home")
 
 
 # ✏️ EDIT TASK
 def edit_task(request, pk):
-    task = get_object_or_404(Task, id=pk)
+    task = get_object_or_404(Task, id=pk, assigned_to=request.user)
     form = TaskForm(request.POST or None, instance=task)
 
     if form.is_valid():
@@ -118,15 +103,13 @@ def edit_task(request, pk):
 
 # ❌ DELETE TASK
 def delete_task(request, pk):
-    task = get_object_or_404(Task, id=pk)
+    task = get_object_or_404(Task, id=pk, assigned_to=request.user)
     task.delete()
     return redirect("home")
 
 
-# 🔐 SIGNUP VIEW
+# 🔐 SIGNUP
 def signup(request):
-
-   
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
